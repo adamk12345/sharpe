@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
-"""
-Spyder Editor
+''''''
 
-This is a temporary script file.
-"""
+
+
 import quandl
 import pandas as pd
 import numpy as np
@@ -29,8 +28,21 @@ for i in stocks:
     close = close.sort_values(by='date')
     close = close.set_index('date')
    
-
-    #data is missing days -> extrapolation or exclusion?
+    #figure out missing dates
+    x=(close.index[0], close.index[-1], pd.date_range(start = close.index[0], end = close.index[-1] ).difference(close.index))
+    
+    #store in dict for assessment across stocks
+    missing_dates[i]=x
+    
+    #do fill and linear interpolation
+    nans = {}
+    for j in x[2]:
+        nans[j] = np.nan
+        
+    extras = pd.DataFrame(nans, index=nans.keys(),columns=['close'])
+    close = close.append(extras)
+    close = close.sort_index()
+    close = close.interpolate()
 
     #turn data into return (normalised just in divided by original amount), assume allocation of just 1 dollar
 
@@ -43,7 +55,18 @@ for i in stocks:
     sharpe_zero_RFR = close['daily return'].mean()/close['daily return'].std()
     sharpe_ratios[i] = sharpe_zero_RFR
 
-    #assess data quality of the time series nextm
+    
+    
+    
 
-    x=(close.index[0], close.index[-1], pd.date_range(start = close.index[0], end = close.index[-1] ).difference(close.index))
-    missing_dates[i]=x
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
